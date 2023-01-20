@@ -38,8 +38,8 @@ public class Publisher {
 
     public void init() {
         restTemplate = new RestTemplate();
-        hubUrl = "https://dev.fayda.et/websub/publish";
-        topic = "AmanTopic";
+        hubUrl = "****************";
+        topic = "************";
     }
 
     @RequestMapping("/registerTopic")

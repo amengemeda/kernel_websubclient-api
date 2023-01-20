@@ -69,9 +69,9 @@ public class Subscriber {
         //String secret = "OIUAShdasoi";
         //subscriptionRequest.setSecret(secret);
 
-        String topic="AmanTopic";
-        String hubUrl = "https://dev.fayda.et/websub/hub";
-        String callback = "http://10.50.50.59:8080/callback";
+        String topic="******";
+        String hubUrl = "****************";
+        String callback = "********************";
         restTemplate = new RestTemplate();
 
         subscriptionRequest = new SubscriptionChangeRequest();
@@ -88,7 +88,7 @@ public class Subscriber {
     @RequestMapping("/subscribe")
     public String Subscribe() throws URISyntaxException {
         this.init();
-        String topic="AmanTopic";
+        String topic="*****";
         SubscriptionChangeResponse subscriptionChangeResponse=subscriptionClient.subscribe(subscriptionRequest);
         assertThat(subscriptionChangeResponse.getTopic(),is(topic));
         return "Subscribed Successfully";
@@ -96,7 +96,7 @@ public class Subscriber {
     @RequestMapping("/unsubscribe")
     public String unsubscribe() throws URISyntaxException {
         this.init();
-        String topic="AmanTopic";
+        String topic="********";
         SubscriptionChangeResponse subscriptionChangeResponse=subscriptionClient.unSubscribe(unsubscriptionRequest);
         assertThat(subscriptionChangeResponse.getTopic(),is(topic));
         return "Unsubscribed Successfully";

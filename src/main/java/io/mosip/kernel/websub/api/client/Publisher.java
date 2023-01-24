@@ -1,22 +1,22 @@
 package io.mosip.kernel.websub.api.client;
 
 import io.mosip.kernel.websub.api.config.publisher.RestTemplateHelper;
+import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
+import org.bouncycastle.asn1.cmp.Challenge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @ComponentScan({"io.mosip.kernel.websub.api.client.PublisherClientImpl"})
 @RestController
@@ -38,8 +38,8 @@ public class Publisher {
 
     public void init() {
         restTemplate = new RestTemplate();
-        hubUrl = "****************";
-        topic = "************";
+        hubUrl = "https://dev.fayda.et/websub/publish";
+        topic = "AmanTopic";
     }
 
     @RequestMapping("/registerTopic")
@@ -75,6 +75,17 @@ public class Publisher {
     public String testResponse(@RequestBody String publishedContent) throws IOException {
         System.out.println("publishedContent: "+publishedContent);
         return "publishedContent: "+publishedContent;
+    }
+
+    @RequestMapping(path = "/callback", method = RequestMethod.GET)
+    public ResponseEntity testGetResponse(@RequestParam("hub.challenge") String challenge, @RequestParam("hub.topic") String res_topic) throws IOException {
+        if(res_topic==topic){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(challenge);
+        }else{
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("");
+        }
     }
 
 }

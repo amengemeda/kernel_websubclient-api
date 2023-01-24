@@ -69,7 +69,7 @@ public class SubscriberClientImpl
 	public SubscriptionChangeResponse subscribe(SubscriptionChangeRequest subscriptionRequest) {
 		// TODO code duplicacy remove
 		// TODO retries on redirect
-//		verifySubscribeModel(subscriptionRequest);
+		verifySubscribeModel(subscriptionRequest);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 

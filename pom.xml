@@ -245,6 +245,11 @@
 			<artifactId>encoder</artifactId>
 			<version>${owasp.encoder.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.bitbucket.b_c</groupId>
+			<artifactId>jose4j</artifactId>
+			<version>0.7.2</version>
+		</dependency>
 
 	</dependencies>
 	<distributionManagement>
@@ -377,6 +382,7 @@
 				<configuration>
 					<skipTests>false</skipTests>
 					<skip>false</skip>
+					<!--suppress UnresolvedMavenProperty -->
 					<argLine>
 						${argLine} --add-opens
 						java.xml/jdk.xml.internal=ALL-UNNAMED

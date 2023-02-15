@@ -2,7 +2,9 @@ package io.mosip.kernel.websub.api.client;
 
 import io.mosip.kernel.websub.api.config.publisher.RestTemplateHelper;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
+import net.minidev.json.JSONValue;
 import org.bouncycastle.asn1.cmp.Challenge;
+import org.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,41 +35,40 @@ public class Publisher {
     @Autowired
     private PublisherClientImpl<String> publisherClientImpl;
 
-    private String hubUrl;
-    private String topic;
-
     public void init() {
         restTemplate = new RestTemplate();
-        hubUrl = "https://dev.fayda.et/websub/publish";
-        topic = "AmanTopic";
     }
 
     @RequestMapping("/registerTopic")
     public String registerTopic() throws URISyntaxException {
         this.init();
-		publisherClientImpl.registerTopic(topic, hubUrl);
+		publisherClientImpl.registerTopic(Variables.moeTopic, Variables.publisherHubUrl);
         return "Topic registered";
     }
 
     @RequestMapping("/unregisterTopic")
     public String unregisterTopic() throws URISyntaxException {
         this.init();
-        publisherClientImpl.unregisterTopic(topic, hubUrl);
+        publisherClientImpl.unregisterTopic(Variables.moeTopic, Variables.publisherHubUrl);
         return "Topic unregistered";
     }
 
     @RequestMapping("/publish")
     public String publish() throws URISyntaxException {
         this.init();
-        String payload = "Test Data";
-        publisherClientImpl.publishUpdate(topic, payload, MediaType.APPLICATION_JSON_UTF8_VALUE, null, hubUrl);
+        String payload = "{\n" +
+                "    \"regid\": \"String\"\n" +
+                "    \"photo\": \"base64 string\"\n" +
+                "    \"FIN\": \"String\"\n" +
+                "}\n";
+        publisherClientImpl.publishUpdate(Variables.topic, payload, MediaType.APPLICATION_JSON_UTF8_VALUE, null, Variables.publisherHubUrl);
         return "Content Published";
     }
 
     @RequestMapping("/notifyUpdate")
     public String notifyUpdate() throws URISyntaxException {
         this.init();
-        publisherClientImpl.notifyUpdate(topic, null, hubUrl);
+        publisherClientImpl.notifyUpdate(Variables.topic, null, Variables.publisherHubUrl);
         return "Update notified";
     }
 
@@ -79,13 +80,44 @@ public class Publisher {
 
     @RequestMapping(path = "/callback", method = RequestMethod.GET)
     public ResponseEntity testGetResponse(@RequestParam("hub.challenge") String challenge, @RequestParam("hub.topic") String res_topic) throws IOException {
-        if(res_topic==topic){
+        if(res_topic==Variables.topic){
             return ResponseEntity.status(HttpStatus.OK)
                     .body(challenge);
         }else{
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("");
         }
+    }
+
+
+    /**
+     * MOE => Ministry of Education
+     *
+     * MOE callback end Points
+     */
+
+    @RequestMapping(path = "ID_CREDENTIAL/callback", method = RequestMethod.POST)
+    public String moePostCallbackResponse(@RequestBody String publishedContent) throws IOException, JSONException {
+        System.out.println("publishedContent: "+publishedContent);
+        JSONObject publishedContentObject = new JSONObject(publishedContent);
+        JSONObject payloadObject=new JSONObject();
+
+        //Elroe function
+
+
+        payloadObject.put("regid",publishedContentObject.get("regid"));
+        payloadObject.put("photo",publishedContentObject.get("photo"));
+        payloadObject.put("FIN",publishedContentObject.get("FIN"));
+        String payloadJSON = JSONValue.toJSONString(payloadObject);
+        publisherClientImpl.publishUpdate(Variables.moeTopic, payloadJSON, MediaType.APPLICATION_JSON_UTF8_VALUE, null, Variables.publisherHubUrl);
+        return "publishedContent: "+publishedContent;
+    }
+
+    @RequestMapping(path = "ID_CREDENTIAL/callback", method = RequestMethod.GET)
+    public ResponseEntity moeGetCallbackResponse(@RequestParam("hub.challenge") String challenge, @RequestParam("hub.topic") String res_topic) throws IOException {
+        System.out.println("challenge: "+challenge);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(challenge);
     }
 
 }

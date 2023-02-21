@@ -65,6 +65,24 @@ public class Subscriber {
 		unsubscriptionRequest.setCallbackURL(Variables.callback);
 
     }
+
+    public void newHubInit() {
+
+
+        restTemplate = new RestTemplate();
+
+        subscriptionRequest = new SubscriptionChangeRequest();
+        subscriptionRequest.setHubURL(Variables.newHubSubscriberHubUrl);
+        subscriptionRequest.setTopic(Variables.newHubTopic);
+        subscriptionRequest.setCallbackURL(Variables.newHubCallback);
+        subscriptionRequest.setSecret(Variables.newHubSecret);
+        
+        unsubscriptionRequest = new UnsubscriptionRequest();
+        unsubscriptionRequest.setHubURL(Variables.newHubSubscriberHubUrl);
+        unsubscriptionRequest.setTopic(Variables.newHubTopic);
+        unsubscriptionRequest.setCallbackURL(Variables.newHubCallback);
+
+    }
     @RequestMapping("/subscribe")
     public String Subscribe() throws URISyntaxException {
         this.init();
@@ -80,4 +98,23 @@ public class Subscriber {
         return "Unsubscribed Successfully";
 	}
 
+
+    /**
+     * New Hub
+     * Subscribe and unsubscribe
+     **/
+    @RequestMapping("newHub/subscribe")
+    public String newHubSubscribe() throws URISyntaxException {
+        this.newHubInit();
+        SubscriptionChangeResponse subscriptionChangeResponse=subscriptionClient.subscribe(subscriptionRequest);
+        assertThat(subscriptionChangeResponse.getTopic(),is(Variables.newHubTopic));
+        return "subscription request sent successfully";
+    }
+    @RequestMapping("newHub/unsubscribe")
+    public String newHubUnsubscribe() throws URISyntaxException {
+        this.newHubInit();
+        SubscriptionChangeResponse subscriptionChangeResponse=subscriptionClient.unSubscribe(unsubscriptionRequest);
+        assertThat(subscriptionChangeResponse.getTopic(),is(Variables.newHubTopic));
+        return "Unsubscribed Successfully";
+    }
 }

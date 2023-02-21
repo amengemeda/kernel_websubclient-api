@@ -13,4 +13,22 @@ public class Variables {
     //publisher variables
     public static final String publisherHubUrl = "https://api-internal.dev.fayda.et/hub";
     public static final String moeTopic="ID_CREDENTIAL";
+
+    /**
+     * New hub variables
+     */
+
+
+    // common variables for subscriber and publisher
+    public static final String newHubTopic="TestTopic";
+    public static final String newHubSecret = "TestSecret";
+
+    // subscriber variables
+    public static final String newHubSubscriberHubUrl = "http://172.19.7.90:9191/hub";
+    public static final String newHubCallback = "http://10.50.50.65:8080/newHub/callback";
+
+    //publisher variables
+    public static final String newHubPublisherHubUrl = "http://172.19.7.90:9191/hub";
+
+
 }

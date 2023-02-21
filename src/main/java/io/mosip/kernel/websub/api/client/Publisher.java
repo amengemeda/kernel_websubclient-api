@@ -120,4 +120,56 @@ public class Publisher {
                 .body(challenge);
     }
 
+
+    /**
+     * NH => New Hub
+     *
+     * New Hub register/unregister topic
+     * New Hub publish topic
+     * New Hub callback end Points
+     */
+
+    @RequestMapping("newHub/registerTopic")
+    public String NHRegisterTopic() throws URISyntaxException {
+        this.init();
+        publisherClientImpl.registerTopic(Variables.newHubTopic, Variables.newHubPublisherHubUrl);
+        return "Topic registered";
+    }
+
+    @RequestMapping("newHub/unregisterTopic")
+    public String NHUnregisterTopic() throws URISyntaxException {
+        this.init();
+        publisherClientImpl.unregisterTopic(Variables.newHubTopic, Variables.newHubPublisherHubUrl);
+        return "Topic unregistered";
+    }
+
+    @RequestMapping("newHub/publish")
+    public String NHPublish() throws URISyntaxException {
+        this.init();
+        String payload = "{\n" +
+                "    \"regId\": \"1234567890\"\n"+
+                "}\n";
+        publisherClientImpl.publishUpdate(Variables.newHubTopic, payload, MediaType.APPLICATION_JSON_UTF8_VALUE, null, Variables.newHubPublisherHubUrl);
+        return "Content Published";
+    }
+    @RequestMapping(path = "newHub/callback", method = RequestMethod.POST)
+    public String NHPostCallbackResponse(@RequestBody String publishedContent) throws IOException, JSONException {
+        System.out.println("publishedContent: "+publishedContent);
+        JSONObject publishedContentObject = new JSONObject(publishedContent);
+        int regId = 0;
+        if(!publishedContentObject.isNull("regId")){
+            regId = publishedContentObject.getInt("regId");
+            int firstFiveDigit = Integer.parseInt(Integer.toString(regId).substring(0, 5));
+            System.out.println("The first Five digits: "+firstFiveDigit);
+        }
+
+        return "publishedContent: "+publishedContent;
+    }
+
+    @RequestMapping(path = "newHub/callback", method = RequestMethod.GET)
+    public ResponseEntity NHGetCallbackResponse(@RequestParam("hub.challenge") String challenge, @RequestParam("hub.topic") String res_topic) throws IOException {
+        System.out.println("challenge: "+challenge);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(challenge);
+    }
 }
